@@ -1,3 +1,4 @@
+#### Consecutive Generalised Linear Models for Multivariate data ####
 #Library:
 library(car)
 library(heplots)
@@ -7,7 +8,12 @@ library(openxlsx)
 library(groupedstats)
 library(ggplot2)
 
-# Make linear model:
+# General formula for consectutive glm (example):
+variables_names <- names(A)[2:100]
+consec_GLM_model <- lapply(variables_names, function(x) {
+  lm(substitute(i ~ B + C + D, list(i = as.name(x))), data = A)}) # B = Y variable, C and D are covariates
+
+# Make linear model (actual):
 model.glm <- lapply(colnames(Dat), function(x) {
   lm(substitute(i ~ na.omit(YVar), 
                 list(i = as.name(x))), data = as.data.frame(Dat))})
