@@ -67,7 +67,7 @@ model.glm.out <- data.frame(model.glm.out, model.glm_effsizeCI)
 model.glm.out <- model.glm.out[,order(colnames(model.glm.out))]
 
 # Filter for P value significance
-model.glm.out.sig <- model.glm.out[which(model.glm.out$na.omit.RNAseq.filt4.1.YVar._pval <= 0.05),]
+model.glm.out.sig <- model.glm.out[which(model.glm.out[,2] <= 0.05),] # P value should be in column 2
 
 # Visualise with waterfall plot
 glm.gg1 <- ggplot(data = as.data.frame(model.glm.out.sig), 
