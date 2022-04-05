@@ -32,7 +32,7 @@ model.glm_coef <- t(model.glm_coef)
 colnames(model.glm_coef) <- paste(colnames(model.glm_coef), "Est.", sep = "_")
 
   # partial eta sq and conf. intervals (effect size)
-model.glm_eta <- as.data.frame(sapply(model.glm, function(f) lm_effsize_ci(f)$eta.sq.partial))
+model.glm_eta <- as.data.frame(sapply(model.glm, function(f) lm_effsize_ci(f)$estimate))
 colnames(model.glm_eta) <- c("Mod.YVar_P.Eta Sq.")
 rownames(model.glm_eta) <- colnames(Dat)
 
@@ -45,7 +45,7 @@ colnames(model.glm_etaUL) <- c("Mod.YVar_CIupper")
 rownames(model.glm_etaUL) <- colnames(Dat)
 
   # partial omega sq and conf. intervals (effect size)
-model.glm_omega <- as.data.frame(sapply(model.glm, function(f) lm_effsize_ci(f, effsize = 'omega')$omega.sq.partial))
+model.glm_omega <- as.data.frame(sapply(model.glm, function(f) lm_effsize_ci(f, effsize = 'omega')$estimate))
 colnames(model.glm_omega) <- c("Mod.YVar_P.omega Sq.")
 rownames(model.glm_omega) <- colnames(Dat)
 
