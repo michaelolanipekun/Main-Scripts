@@ -58,13 +58,11 @@ colnames(model.glm_omegaUL) <- c("Mod.YVar_omegaCIupper")
 rownames(model.glm_omegaUL) <- colnames(Dat)
 
 # Arrange outputs in table
-model.glm_effsizeCI <- cbind(model.glm_etaLL, model.glm_etaUL, model.glm_omegaLL, model.glm_omegaUL)
-model.glm_effsizeCI <- model.glm_effsizeCI[,order(colnames(model.glm_effsizeCI))]
-model.glm_effsizeCI <- cbind(model.glm_eta, model.glm_omega, model.glm_effsizeCI)
-
-model.glm.out <- cbind(model.glm_coef, model.glm_pval)
-model.glm.out <- data.frame(model.glm.out, model.glm_effsizeCI)
-model.glm.out <- model.glm.out[,order(colnames(model.glm.out))]
+model.glm1.out <- data.frame('Est' = model.glm1_coef[,2], 'P_val' = model.glm1_pval[,2],
+                                  'eta_sq' = model.glm1_eta[,1], 
+                                  'eta_sq_UL' = model.glm1_etaUL[,1], 'eta_sq_LL' = model.glm1_etaLL[,1], 
+                                  'omega_sq' = model.glm1_omega[,1], 
+                                  'omega_sq_UL' = model.glm1_omegaUL[,1], 'omega_sq_LL' = model.glm1_omegaLL[,1])
 
 # Filter for P value significance
 model.glm.out.sig <- model.glm.out[which(model.glm.out[,2] <= 0.05),] # P value should be in column 2
