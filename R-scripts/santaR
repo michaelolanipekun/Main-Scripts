@@ -1,0 +1,103 @@
+#########################################################################
+#### SANTA-R time series analysis with loop for one group comparison ####
+#########################################################################
+# Setup
+library(santaR)
+library(ggplot2)
+colorme <- c('#FDAE61', '#80B1D3', '#FB8072', '#BEBADA', '#FDE0EF', '#B3E2CD', '#FDCDAC', '#80CDC1', '#FFF2AE','#AA9486')
+
+## In browser Santa R:
+# santaR_start_GUI(browser = TRUE) # >>> Opens GUI 
+
+## Manual (R) SantaR implementation: 
+# MD = metadata with time and replicate data (columns) and samples (rows)
+# AAm.2 = metabolites (cols) x samples (rows)
+AAm.2_MD <- cbind(MD, AAm.2) 
+
+#Edit the code:
+#trace(santaR_auto_fit, edit = T) -> The pval_dist_within only returns a Pvalue so we can do it manually faster
+MD_group <- rep(1, length = length(MD$Day))
+# Command line version
+AAm.san <- santaR_auto_fit(inputData = AAm.3, ind = MD$replicate, time = MD$Day, df = 5, ncores = 4, CBand = TRUE, pval.dist = FALSE)
+AAm.san_summ <- santaR_auto_summary(AAm.san)
+
+# does the trend of a variable significantly differ from a 'null' variable?
+santaR_pvalue_dist_within(AAm.san[[1]]$groups[[1]]) #loop to acquire dist P vals for all:
+AAm.san.dist <- vector(length = length(AAm.san))
+for(i in 1:length(AAm.san)){ 
+  AAm.san.dist[i] = paste(santaR_pvalue_dist_within(AAm.san[[i]]$groups[[1]]))
+}
+AAm.san.distdf <- data.frame(AAm.san.dist); rownames(AAm.san.distdf) <- names(AAm.san)
+AAm.san.dist.sig <- subset(AAm.san.distdf, AAm.san.distdf<=0.05) # filter by pval
+AAm.san.top <- subset(AAm.san.dist.sig, AAm.san.dist.sig<=0.01) # filter by pval
+AAm.san.top1 <- AAm.san.top[order(AAm.san.top), , drop = FALSE] # reorder by sig
+'AAm.san.top_names' <- rownames(AAm.san.top1)
+Am_Kegg_Hmdb_san_top <- Am_Kegg_Hmdb[which(Am_Kegg_Hmdb$Variables_99_info.BIOCHEMICAL %in% AAm.san.top_names),]
+
+# Plot sig
+AAm.san2<- AAm.san[names(AAm.san) %in% rownames(AAm.san.dist.sig)]
+c <- rownames(AAm.san.dist.sig) 
+d <- -log10(as.numeric(AAm.san.dist.sig[,1]))
+ggpm1 <- ggplot(data = AAm.san.dist.sig, aes(reorder(c, d), d))
+ggpm1 + geom_col(fill = "#FC8D62", color = "black") + 
+  ylab('-Log(p)') + 
+  xlab('Compounds') + 
+  Theme.Box.Blank()  +
+  theme(axis.text.x = element_text(size = 11, color = 'black')) +
+  #scale_fill_continuous(low="darkred", high="darkgreen") +
+  theme(legend.position = "none") +
+  #geom_hline(yintercept = 1.3, linetype = 1, color = 'blue') #+
+  coord_flip()
+
+# plot individual metabolite
+santaR_plot(AAm.san2[['kynurenine']])
+
+# plot top 20 cell metabolites:
+santa_plots_media <- list(
+  p1 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[1]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[1]),
+  p2 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[2]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[2]),
+  p3 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[3]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[3]),
+  p4 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[4]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[4]),
+  p5 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[5]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[5]),
+  p6 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[6]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[6]),
+  p7 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[7]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[7]),
+  p8 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[8]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[8]),
+  p9 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[9]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[9]),
+  p10 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[10]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[10]),
+  p11 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[11]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[11]),
+  p12 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[12]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[12]),
+  p13 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[13]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[13]),
+  p14 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[14]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[14]),
+  p15 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[15]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[15]),
+  p16 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[16]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[16]),
+  p17 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[17]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[17]),
+  p18 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[18]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[18]),
+  p19 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[19]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[19]),
+  p20 <- santaR_plot(AAm.san2[[rownames(AAm.san.top1)[20]]], colorVect = c(colorme[3], colorme[3]), legend = FALSE) + xlab('Time (Days)') + ylab('Normalised intensity') +
+    scale_x_continuous(breaks = c(G1)) + ggtitle(rownames(AAm.san.top1)[20])
+)
+
+grid.arrange(santa_plots_media[[1]], santa_plots_media[[2]], santa_plots_media[[3]], santa_plots_media[[4]], santa_plots_media[[5]],
+             santa_plots_media[[6]], santa_plots_media[[7]], santa_plots_media[[8]], santa_plots_media[[9]], santa_plots_media[[10]], 
+             santa_plots_media[[11]], santa_plots_media[[12]], santa_plots_media[[13]], santa_plots_media[[14]], santa_plots_media[[15]], 
+             santa_plots_media[[16]], santa_plots_media[[17]], santa_plots_media[[18]], santa_plots_media[[19]], santa_plots_media[[20]], 
+             ncol = 5, nrow = 4)
