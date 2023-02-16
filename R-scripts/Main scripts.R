@@ -303,6 +303,9 @@ KO2_iso_gn2 <- KO2_iso_gn %>%
 # 5 1     "ko:K00016"
 # (...)
 
+# Rename columns of a list
+lapply(data_list, "colnames<-", c("A", "B", "C", "D"))
+
 unique() # finds what is unique in an object
 intersect() # finds the overlap between two objects
 sym_diff <- function(a,b) unique(c(setdiff(a,b), setdiff(b,a)))
