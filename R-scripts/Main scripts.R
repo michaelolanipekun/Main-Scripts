@@ -250,6 +250,14 @@ Matched <- match_df(A, B, on = "V1") #matched samples - use on = "" to explain w
 CSI2.3.N <- CSI2.3[CSI2.3$csi2_.SC_N == '1',]
 md.filt <- md2[md2$BMI_C > 25 & md2$BMI_C < 30 & md2$GENDER == 'Male' | 
               md2$BMI_C > 22 & md2$BMI_C < 28 & md2$GENDER == 'Female' , ]
+
+# Filter with dplyr:
+df <- read.csv("blem.csv") %>%
+  filter(donor_id %in% list_ids) %>% arrange(., donor_id)
+
+# Filter/subset using select (dplyr):
+battenberg.purity.dat %>% filter(SangerID %in% c(id)) %>% dplyr::select(BATTENBERG) %>% as.numeric()
+
 #Search for part of a string
 library(data.table)
 df[,1] %like% '9.72'
@@ -310,6 +318,10 @@ unique() # finds what is unique in an object
 intersect() # finds the overlap between two objects
 sym_diff <- function(a,b) unique(c(setdiff(a,b), setdiff(b,a)))
 Tmp3 <- sym_diff(Tmp1, Tmp2) # opposite of intersect
+
+# remove multiple objects from env:
+rm(list = c('RCC_clin', 'RCC_demo', 'RCC_patho'))
+
 
 ###################################
 ####    DATA PREPROCESSING     ####
