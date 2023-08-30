@@ -4,9 +4,9 @@
 lapply(c("vcfR", "maftools", "anor", "BioInstaller"),
        require, character.only = TRUE)
 # initialise:
-annovar.dir <- "/home/olanipekunm/R/x86_64-pc-linux-gnu-library/4.1/annovar"
-database.dir <- "/home/olanipekunm/R/x86_64-pc-linux-gnu-library/4.1/annovar/humandb"
-vcfanno.dir <- "/home/olanipekunm/R/x86_64-pc-linux-gnu-library/4.1/vcfanno.dir"
+annovar.dir <- "/home/usr/R/x86_64-pc-linux-gnu-library/4.1/annovar"
+database.dir <- "/home/usr/R/x86_64-pc-linux-gnu-library/4.1/annovar/humandb"
+vcfanno.dir <- "/home/usr/R/x86_64-pc-linux-gnu-library/4.1/vcfanno.dir"
 # install.bioinfo('annovar', annovar.dir)
 # install.bioinfo('vcfanno', vcfanno.dir)
 # download.database('db_annovar_refgene', database.dir = database.dir, buildver = "hg19")
@@ -92,15 +92,15 @@ VCF2MAF2Read <- function(indir, outdir, indir.p = NULL, outdir.p = NULL, db){
 # Metadata2clin ####
 caveman.files <- list.files(indir) # use path as before for indir input
 list_ids <- unique(str_extract(caveman.files[str_detect(caveman.files, "caveman")], "PD[0-9]{5}a"))
-metadata <- read.csv("/data/mutographs/files/Somatic/RCC_Balkan/metadata/Balkan_RCC_meta_data/MutWP1_Balkan_RCC_core_data_Train21.csv") %>%
-  filter(donor_id %in% list_ids) %>% arrange(., donor_id)
-clin <- metadata %>% dplyr::select(donor_id, sex, age_diag, country, tobacco, alcohol, histo_type)
+metadata <- read.csv("/data/mydata.csv") %>%
+  filter(id %in% my_ids) %>% arrange(., id)
+clin <- metadata %>% dplyr::select(id, sex, age, country)
 names(clin)[1] <- "Tumor_Sample_Barcode"
 clin$Tumor_Sample_Barcode <- as.factor(clin$Tumor_Sample_Barcode)
 CPmaf@clinical.data <- data.table(clin)
 
 # Part 2 - MAFTOOLS ####
-resdir <- "/home/olanipekunm/R/Balkans/Balkans_Genomics_MO/Results/" # path to directory for results
+resdir <- "/home/usr/R/Results/" # path to directory for results
 # 1. Oncoplot
 vc_cols <- colorme[1:8]
 names(vc_cols) = c(
@@ -109,7 +109,7 @@ names(vc_cols) = c(
   'Splice_Site','In_Frame_Del')
 print(vc_cols)
 
-pdf(paste0(resdir,"RCC/Maftools_blk_rcc_oncoplot.pdf"), width = 6, height = 4)
+pdf(paste0(resdir,"oncoplot.pdf"), width = 6, height = 4)
 oncoplot(CPmaf, top = 10, colors = vc_cols, bgCol = "white")
 dev.off()
 
@@ -122,7 +122,7 @@ clin$Tumor_Sample_Barcode <- as.factor(clin$Tumor_Sample_Barcode)
 CPmaf@clinical.data <- data.table(clin)
 
 # 2. TiTv
-pdf(paste0(resdir,"RCC/Maftools_blk_rcc_titv.pdf"), width = 6, height = 4)
+pdf(paste0(resdir,"titv.pdf"), width = 6, height = 4)
 titv(maf = CPmaf, plot = TRUE, useSyn = F)
 dev.off()
 
@@ -131,7 +131,7 @@ for (i in 1:length(list_ids)){
   rainfallPlot(maf = CPmaf, detectChangePoints = T, ref.build = "hg38", tsb = list_ids[i])
 }
 
-pdf(paste0(resdir,"RCC/Maftools_blk_rcc_rainfall_PD59937a.pdf"), width = 6, height = 4)
+pdf(paste0(resdir,"rainfall.pdf"), width = 6, height = 4)
 rainfallPlot(maf = CPmaf, detectChangePoints = T, ref.build = "hg38")
 dev.off()
 
@@ -140,8 +140,6 @@ dev.off()
 onc.sig <- oncodrive(maf = CPmaf, AACol = "aaChange", minMut = 5, pvalMethod = 'zscore')
 head(onc.sig)
 plotOncodrive(res = onc.sig, fdrCutOff = 0.1, useFraction = TRUE, labelSize = 0.5)
-# poisson
-onc.sig.1 <- oncodrive(maf = CPmaf, AACol = "aaChange", minMut = 5, pvalMethod = 'poisson')
-head(onc.sig.1)
+
 
 
