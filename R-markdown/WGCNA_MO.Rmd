@@ -187,22 +187,7 @@ plotDendroAndColors(featTree, cbind(dynamicColors, mergedColors),
                     addGuide = TRUE, guideHang = 0.05)
 ```
 
-## 6) Collect data into single list
-```{r, echo=TRUE}
-moduleColors = mergedColors
-network$moduleColors <- moduleColors
-network$featTree <- featTree
-network$dat <- dat
-network$adj <- adj
-network$TOM <- TOM
-network$softPower <- softPower
-network$minModuleSize <- minModuleSize
-network$MEs <- MEs
-network$ar <- ar
-```
-
-
-## 7) Acquire module eigenvectors/eigengenes
+## 6) Acquire module eigenvectors/eigengenes
 ```{r, echo=TRUE}
 # Rename to moduleColors
 moduleColors = mergedColors
@@ -223,6 +208,21 @@ plotDendroAndColors(network$featTree, network$moduleColors, "Dynamic Tree Cut",
                     dendroLabels = FALSE, hang = 0.03,
                     addGuide = TRUE, guideHang = 0.05,
                     main = "Metabolite dendrogram and module colors")
+```
+
+
+## 7) Collect data into single list
+```{r, echo=TRUE}
+moduleColors = mergedColors
+network$moduleColors <- moduleColors
+network$featTree <- featTree
+network$dat <- dat
+network$adj <- adj
+network$TOM <- TOM
+network$softPower <- softPower
+network$minModuleSize <- minModuleSize
+network$MEs <- MEs
+network$ar <- ar
 ```
 
 
