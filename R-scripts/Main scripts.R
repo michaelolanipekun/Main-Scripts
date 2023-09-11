@@ -322,6 +322,8 @@ Tmp3 <- sym_diff(Tmp1, Tmp2) # opposite of intersect
 # remove multiple objects from env:
 rm(list = c('RCC_clin', 'RCC_demo', 'RCC_patho'))
 
+# Grep "starts with"
+grep("^SBS*", df$blem)
 
 ###################################
 ####    DATA PREPROCESSING     ####
