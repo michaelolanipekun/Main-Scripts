@@ -923,6 +923,13 @@ corrplot(corME_MD, method = 'color', addgrid.col = 'black', tl.col='black',
          tl.cex = 0.9, is.corr = TRUE, type = 'full', p.mat = corME_MDq, 
          insig = "label_sig", pch.col = "black", pch.cex = 1.1)
 
+# Latest Version:
+corrplot(t(KMvsWG), method = 'color', addgrid.col = 'black', tl.col='black', 
+         tl.cex = 0.9, tl.srt = 0, is.corr = TRUE, type = 'full', pch.col = "black", 
+         pch.cex = 1.1, col = NULL, cl.pos = 'n') 
+# with the legend:
+colorlegend(xlim=c(5,7), ylim=c(10,15), colorRampPalette(brewer.pal(8, "RdBu"))(8), 
+            c(seq(-1,1,.5)), align="l", vertical=TRUE, addlabels=TRUE)
 
 ############################
 ####    Linear Models   ####
