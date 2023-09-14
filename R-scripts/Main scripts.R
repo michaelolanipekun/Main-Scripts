@@ -364,6 +364,15 @@ test_LCMD <- impute.MAR.MNAR(Ori2,
 ######################
 ####    LOOPS     ####
 ######################
+# Loop with progress bar (pb)
+tr <- list()
+pb <- txtProgressBar(min = 1, max = NROW(list_ids), style = 3)
+for (i in 1:NROW(list_ids)){
+  setTxtProgressBar(pb, i)
+  tr[[i]] <- run_mutationtime(list_ids[i])
+}
+
+
 ## ANOVA loop:
 a_vector = vector(length = (ncol(CellNorm2) - 1))  
 
