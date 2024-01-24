@@ -470,6 +470,19 @@ gg.5doc.nf2 + geom_boxplot(fill = "#D9D0D3", color = 'black') +
   theme(legend.position = "none")
 #for colouring jitter: geom_jitter(aes(color = melt.qr[,2])) +
 
+# Boxplot with significance stars
+ggplot(data = MSA_MTcomb.22a.noTotal.melt %>% filter(variable %in% c("Early", "Late", "Subclonal")), 
+       mapping = aes(variable, log(value), fill = variable)) + 
+  geom_boxplot(outlier.shape = NA) + geom_jitter(shape = 21, width = 0.2) +
+  scale_fill_manual(values = alpha(colorme.1[1:4], 0.7)) +
+  ylab("Log SBS22a attribution") + xlab("") + ylim(0,9) +
+  geom_signif(comparisons = list(c("Early", "Late")), 
+              annotations = "*", textsize = 8) +
+  geom_signif(comparisons = list(c("Late", "Subclonal")), 
+              annotations = "*", y_position = 7, textsize = 8) +
+  theme_bw() + 
+  ggtitle("SBS22a Attribution for MutationTimeR Clonal Groups") + theme(legend.position = 'none')
+
 # Barchart (geom col)
 xy <- meso_anova3
 bp <- ggplot(xy, aes(reorder(rownames(xy), -xy[,3]), xy[,3], color = NULL, fill = xy[,3]))
@@ -506,6 +519,16 @@ glm.gg +
   theme(legend.position = "none") +
   #geom_hline(yintercept = 1.3, linetype = 1, color = 'blue') #+
   coord_flip()
+
+# Barchart with text annotations
+ggplot(MSA_prop, mapping = aes(proportion, rownames(MSA_prop), fill = rownames(MSA_prop))) +
+  geom_col(color = "black") +
+  xlab("Samples with Signature (%)") + ylab("") + xlim(0,100) +
+  scale_fill_manual(values = c(colorme.1[4], colorme.1[1:2], "grey60", colorme.1[3])) +
+  theme_bw() + coord_flip() +
+  geom_text(data = MSA_prop, aes(proportion+3, rownames(MSA_prop),
+                                     label = paste0(MSA_prop$count, "/34"))) +
+  ggtitle("") + theme(legend.position = 'none')
 
 # Lollipop plot
 lp3 <- ggplot(def, aes(reorder(def[,1], -def[,2]), def[,2]))
