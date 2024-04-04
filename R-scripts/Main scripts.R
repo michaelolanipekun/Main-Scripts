@@ -19,6 +19,9 @@ DS <- as.matrix(read.csv("EXAMPLE.csv",	header	=	TRUE, row.names = 1,	check.name
 # read.csv(... skip = 1) skips the first row to make the second row the header
 xldf <- read.xlsx('Datadatadata.xlsx', 2) #number shows the sheet of the xl workbook
 
+# import other environment objects
+e = local({load("example.RData"); environment()})
+
 #####################
 #### Plot Themes ####
 #####################
