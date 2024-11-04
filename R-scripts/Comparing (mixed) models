@@ -1,0 +1,35 @@
+# CARET:
+library(caret)
+
+# Define a control for cross-validation
+train_control <- trainControl(method = "cv", number = 10)
+# ready the datasets
+dataset1 <- data.frame("Y"=MD$age, df1, check.names = F)
+dataset2 <- data.frame("Y"= MD2$age, df2, check.names = F)
+# Train a model on each dataset
+s.test.model1 <- train(Y ~ ., data = dataset1, method = "lm", trControl = train_control)
+s.test.model2 <- train(Y ~ ., data = dataset2, method = "lm", trControl = train_control)
+# Compare RMSE or R-squared values
+rbind("M1" = s.test.model1$results, "M2" = s.test.model2$results)
+
+# Using ANOVA (on mixed model):
+library(lme4)
+library(tibble)
+library(broom)
+library(broom.mixed)
+
+# old model
+lmod <- lFormula(Y ~ age_diag + sex + dor_yr + (1|region), data=M2)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(W2))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+Mod1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+# new model
+lmod <- lFormula(Y ~ age_diag + sex + (1|region), data=M2)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(W2))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+Mod2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+# compare models
+anova(Mod1, Mod2, test= "Chisq")
