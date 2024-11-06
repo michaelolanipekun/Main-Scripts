@@ -200,6 +200,8 @@ library(WGCNA)
 ##############################
 ####    DATA HANDLING     ####
 ##############################
+`%nin%` <- negate(`%in%`) # "not in" function
+
 # Quick matrix maker to test functions and strings
 x = matrix(data = c(1:9), nrow = 3, ncol = 3)
 x1 = apply(as.array(x), 1, as.character)
