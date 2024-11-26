@@ -2529,6 +2529,18 @@ circosPlot(Cell_Tum.diablo, cutoff = 0.9)
 plotLoadings(Cell_Tum.diablo, comp = 1, contrib = 'max')
 
 ####################
+####    VENN    ####
+####################
+library(VennDiagram)
+venn.diagram(
+  x = list(na.omit(O.df2$UniProt.ID), na.omit(soma$UniProt)),
+  category.names = c("Olink" , "Soma" ),
+  fill = c("skyblue", "yellow"),
+  filename = 'OlinkSoma_overlap.png',
+  output=TRUE
+)
+                                   
+####################
 ####    MISC    ####
 ####################
 # Apply function to multiple objects
