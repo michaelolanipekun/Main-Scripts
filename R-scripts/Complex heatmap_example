@@ -1,0 +1,71 @@
+# Library
+library(tidyverse)
+library(readxl)
+library(ComplexHeatmap)
+library(circlize)
+library(ggpubr)
+
+# Data
+dat <- read_excel("example.xlsx", sheet = "Sheet1")
+
+# Colours
+## continuous:
+col_fun <- colorRamp2(c(0, 484, 1000), c("white", "orange", "red"))
+col_fun(seq(0, 50, 100))
+
+## discrete on continouous:
+col_fun_d1 <- function(x) {
+  ifelse(x < 484, "white",
+         ifelse(x >= 484 & x < 1000, "orange", "red"))
+}
+
+## discrete on discrete (data discretised using cut()):
+colors <- c("(0,484]" = "white",  "(484,1e+03]" = "red", "(1e+03,Inf]" = "red", 
+             "(0,200]" = "white", "(200,Inf]" = "red",
+             "(0,679]" = "white", "(679,Inf]" = "red",
+             "(0,548]" = "white", "(548,Inf]" = "red")
+
+# row annotation
+row_ha <- rowAnnotation("Tumor" = (dat2$`status` != "negative"), # transform to logical 
+                        "Gender" = dat2$`gender`,
+                        "Lead Time (years)" = cut(dat2$`lead time [y]`, c(-Inf, 5, 10, Inf)),
+                        col = list("16 Tumor" = c('TRUE' = 'royalblue', 'FALSE' = 'lightblue1'), # colour logical
+                                   "Gender" = c('1' = 'springgreen4', '2' = 'lightgreen'),
+                                   "Lead Time (years)" = c('(-Inf,5]' = "grey15", '(5,10]' = "grey60", '(10, Inf]' = "grey80")), # colour by ranges
+border = T, 
+                        show_annotation_name = TRUE, annotation_name_side = "top",
+                        annotation_name_rot = 55, width = unit(5, "cm"),
+                        annotation_legend_param = list(
+                          "Tumor" = list(title = "Tumor", labels = c("Negative", "Positive")),
+                          "Gender" = list(title = "Gender", labels = c("Male", "Female")),
+                          "Lead Time (years)" = list(title = "Lead Time (years)", labels = c("\u2264 5", "> 5 and < 15", "> 15"))
+                        ),
+                        gp = gpar(col = "black", lwd = 0.1)) # add lines to annotation
+
+
+# Manually make/add legend object:
+lgd = Legend(at = c("negative" = "white", "positive" = "red"), 
+             labels = c("Negative", "Positive"), title = "Serology", 
+             legend_gp = gpar(fill = c("(0,200]" = "white", "(200,Inf]" = "red")))
+
+# Make Heatmap:
+ht <- Heatmap(dat, name = "Blem", 
+        width = unit(5, "cm"), height = unit(20, "cm"), col = colors, 
+        row_dend_reorder = T, column_dend_reorder = T,
+        column_names_rot = 0, show_row_dend = T, show_column_dend = T,
+        cluster_rows = F, cluster_columns = F, row_names_side = 'left', 
+        #row_labels = rownames(dat),
+        show_row_names = T, show_column_names = T, column_names_side = "top", column_names_centered = T,
+        row_names_gp = gpar(fontsize = 7), column_names_gp = gpar(fontsize = 11, just = "left"),
+        rect_gp = gpar(col = "black", lwd = 0.1),
+        heatmap_legend_param = list(title = 'Serology',
+                                    breaks = c("(0,484]", "(484,1e+03]", "(1e+03,Inf]"),
+                                    at = c("(0,484]",  "(484,1e+03]", "(1e+03,Inf]"),
+                                    labels = c("< 484", "< 1000 and > 484", "> 1000"),
+                                    legend_height = unit(3, 'cm'),
+                                    title_position = 'topleft',
+                                    color_bar = "discrete"), border = T,
+        left_annotation = row_ha) 
+
+# Plot it all together:
+draw(ht, heatmap_legend_list = list(lgd))
